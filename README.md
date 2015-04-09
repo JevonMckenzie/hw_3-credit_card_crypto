@@ -42,7 +42,7 @@ Finally, make sure it passes all the tests I have also provided:
 (run the spec file from the root directory of your solution)
 
 ### B. Substitution Ciphers
-Your team will implement two ciphers that we saw in class: the Caeser Cipher and the Permutation Cipher.
+Your team will implement two ciphers that we saw in class: the Caesar Cipher and the Permutation Cipher.
 
 - Implement the `SubstitutionCipher` module in `substitution_cipher.rb`
   - Create encrypt and decrypt methods of both ciphers
@@ -50,7 +50,7 @@ Your team will implement two ciphers that we saw in class: the Caeser Cipher and
     - they all return a string (encrypted or decrypted)
   - Assumptions you may make:
     - All `document` characters are printable ASCII (ord 32-126)
-    - Caeser cipher: there is not need to 'wrap' values -- just add/subtract the key to encrypt/decrypt
+    - Caesar cipher: there is not need to 'wrap' values -- just add/subtract the key to encrypt/decrypt
     - Permutation cipher: assume you can replace with any characters values from 0-127 (ord)
   - Make sure the decrypt method recreates the original document it is given!
 
@@ -66,6 +66,20 @@ Your team must implement the double transposition and AES ciphers we saw in clas
   - AesCipher in aes_cipher.rb
 - Write more tests for these ciphers in `spec/crypto_spec.rb`
   - Can you DRY out all the tests using metaprogramming as we saw in class?
+
+### D. Hashing Credit Cards
+Your team must implement hashing methods for credit card objects. Recall that all objects in Ruby have a `hash` method by default. However, this method does not use the contents of their objects to produce hashes. Furthermore, this hash method cannot produce a cryptographically strong hash.
+
+- Override the default hash: Override the default `hash` method of CreditCard to hash the serialized data of the card. Credit cards with identical information should produce identical hashes. Do not use any cryptographic hashing method here.
+- Create a cryptographic hash: Implement the `secure_hash` method to produce a SHA256 hash (return a hexadecimal string). Credit cards with identical information should produce identical secure hashes.
+- BUT FIRST: look at the hashing test specs in `spec/hash_spec.rb`
+  - *Implement all the tests* that are shown (you are welcome to add your own as well)
+  - make sure your implemented tests *all fail* before writing *any* code!
+  - make sure they pass *one-by-one* while writing code :)
+- We are coming to the end of this assignment -- time to do some cleanup:
+  - Add references in `Gemfile` to all the gems you are using in your code and test files.
+  - run the `rubocop` gem on your code to see if your code style is appropriate
+
 
 ## Submission
 Please submit one solution for your team. You may simply submit the HTTP url of the git repository where we can find your solution.
