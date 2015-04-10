@@ -1,30 +1,74 @@
+require 'gsl'
+
 module DoubleTranspositionCipher
-  def self.gen_mapping(doc_len, factor, key, reversed = false)
-    num_gen = Random.new(key.to_i)
-    mapping = (0..doc_len / factor - 1).to_a.shuffle(random: num_gen).product((0..factor - 1).to_a.shuffle(random: num_gen)).map { |pair| pair.first * factor + pair.last }
-    mapping = Hash[mapping.zip((0..doc_len - 1).to_a)] if reversed
-    mapping
+  def self._swap(mat, iterations, rand_key, swap_rows)
+    i = 0
+    j = 2
+    key_int = rand_key.rand(128)
+    (0..key_int).each{
+      if i == iterations-2
+        i = 0
+      end
+      if swap_rows == true
+        mat = mat.swap_rows(i,j+i)
+      else
+        mat = mat.swap_cols(i,j+i)
+      end
+      i += 1
+    }
+    return mat
   end
 
   def self.encrypt(document, key)
-    doc_str = document.to_s
-    ((doc_str.length**0.5).to_i..doc_str.length).each do |num|
-      next if doc_str.length % num != 0
-      mapping = gen_mapping(doc_str.length, num, key)
-      return doc_str.chars.each_with_index.map do |_, index|
-        doc_str[mapping[index]]
-      end.join
-    end
+    # TODO: FILL THIS IN!
+    ## Suggested steps for double transposition cipher
+    # 1. find number of rows/cols such that matrix is almost square
+    # 2. break plaintext into evenly sized blocks
+    # 3. sort rows in predictibly random way using key as seed
+    # 4. sort columns of each row in predictibly random way
+    # 5. return joined cyphertext
+    len = document.length
+    rows = (len**0.5).round
+    cols = (len/rows.to_f).round
+    rand_key = Random.new(key)
+    rand_key.rand(128)
+
+    (len..rows*cols).each{|x|document[x] = '+'}
+    content = document.split("").map{|c|c.ord}
+    vec = GSL::Vector::Int.alloc(*content)
+    mat = vec.matrix_view(rows,cols)
+    mat = _swap(mat, rows, rand_key, true)
+    mat = _swap(mat, cols, rand_key, false)
+    encrypted_text = '';
+    mat.to_v.each{|x|
+      encrypted_text << x.chr
+    }
+    return encrypted_text
   end
 
   def self.decrypt(ciphertext, key)
-    cip_str = ciphertext.to_s
-    ((cip_str.length**0.5).to_i..cip_str.length).each do |num|
-      next if cip_str.length % num != 0
-      mapping = gen_mapping(cip_str.length, num, key, true)
-      return cip_str.chars.each_with_index.map do |_, index|
-        cip_str[mapping[index]]
-      end.join
-    end
+    # TODO: FILL THIS IN!
+    len = ciphertext.length
+    rows = (len**0.5).round
+    cols = (len/rows.to_f).round
+    rand_key = Random.new(key)
+    rand_key.rand(128)
+
+    content = ciphertext.split("").map{|c|c.ord}
+    vec = GSL::Vector::Int.alloc(*content)
+    mat = vec.matrix_view(rows,cols)
+    mat = _swap(mat, rows, rand_key, true)
+    mat = _swap(mat, cols, rand_key, false)
+    plain_text = '';
+    mat.to_v.each{|x|
+      plain_text << x.chr
+    }
+    plain_text.gsub!(/[+]/, '')
+    return plain_text
   end
 end
+
+#enc_text =  DoubleTranspositionCipher::encrypt('today is a good day',89);
+#plain_text =  DoubleTranspositionCipher::decrypt(enc_text,89);
+#print enc_text, "\n"
+#print plain_text, "\n"
